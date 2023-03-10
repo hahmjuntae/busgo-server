@@ -1,0 +1,32 @@
+{
+  "name": "busgo-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "lint": "eslint '**/*.{js,jsx,ts,tsx}' --fix"
+  },
+  "keywords": [],
+  "author": "JunTae Hahm",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.2.2",
+    "body-parser": "^1.20.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.7",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "js-cookie": "^3.0.1",
+    "mongoose": "^6.8.2",
+    "nodemon": "^2.0.20",
+    "socket.io": "^4.5.4"
+  },
+  "devDependencies": {
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1"
+  }
+}

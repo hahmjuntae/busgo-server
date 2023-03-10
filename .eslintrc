@@ -1,0 +1,67 @@
+{
+  "plugins": ["prettier"],
+  "extends": ["eslint:recommended", "prettier/prettier"],
+  "rules": {
+    /* prettier */
+    "prettier/prettier": "error",
+
+    /* Rules */
+    "no-multiple-empty-lines": ["error", { "max": 1, "maxBOF": 0, "maxEOF": 1 }],
+    // 최대 줄바꿈 수는 한 줄, 마지막 줄바꿈 없음
+
+    "function-paren-newline": ["error", "multiline-arguments"],
+    // 오직 하나 개의 매개 변수/인자가 있는 경우 괄호 안의 줄 바꿈 허용
+
+    "comma-dangle": ["error", "always-multiline"],
+    // 후행 쉼표
+    // always : 항상 쉼표가 필요
+    // always-multiline : 2줄 이상일때, 마지막에 쉼표 필요. 한줄일때는 후행쉼표 x
+
+    "object-curly-spacing": ["error", "always"],
+    // object 괄호 앞 뒤로 공백 추가 여부 ( always || never )
+
+    "space-in-parens": ["error", "never"],
+    // ( , ) 괄호 앞뒤로 공백 추가 ( always || never )
+
+    "computed-property-spacing": ["error", "never"],
+    // obj[key] 에서 [ key ] 로 적을지, [key]로 적을지 ( alway || never )
+
+    "comma-spacing": ["error", { "before": false, "after": true }],
+    // comma 앞뒤로 공백: 앞에는 없고, 뒤에는 있도록
+
+    "eol-last": ["error", "always"],
+    // 파일의 맨 마지막에 줄바꿈을 추가 여부 ( always || never )
+    // 쉘 프롬프트를 방해하지 않고 터미널로 출력 파일뿐만 아니라 파일을 연결하거나 추가할 수 있는 이점
+
+    // "quotes": ["error", "single"],
+    // 따옴표 ( single || double )
+    // single 사용하지만 double안에 single 있을 경우 에러 처리, prettier에게 맡김
+
+    "no-tabs": ["error", { "allowIndentationTabs": true }],
+    // 탭(\t) 사용 금지
+
+    "semi": ["error", "always"],
+    // 세미콜론 항상 설정 ( always || never)
+
+    "object-shorthand": "off",
+    // ES6에서 나온 객체를 간편하게 쓰는 문법으로 강제
+
+    "padding-line-between-statements": [
+      "error",
+      { "blankLine": "always", "prev": "*", "next": "return" },
+      { "blankLine": "always", "prev": ["const", "let", "var"], "next": "*" },
+      { "blankLine": "any", "prev": ["const", "let", "var"], "next": ["const", "let", "var"] }
+    ]
+    // prev : 이전에 무엇이 왔을때 blankline을 넣을것인가? // const, let, var
+    // next : 다음에 무엇이 왔을때 blankline을 넣을 것인가?  // return
+  },
+
+  "ignorePatterns": ["node_modules/"], // ESlint를 적용하지 않을 폴더나 파일
+
+  "env": {
+    "browser": true, // console.log를 에러 없이 사용
+    "commonjs": true, // module.exports 구문, require 구문 지원
+    "es2021": true,
+    "node": true
+  }
+}
