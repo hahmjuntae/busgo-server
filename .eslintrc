@@ -43,17 +43,8 @@
     "semi": ["error", "always"],
     // 세미콜론 항상 설정 ( always || never)
 
-    "object-shorthand": "off",
+    "object-shorthand": "off"
     // ES6에서 나온 객체를 간편하게 쓰는 문법으로 강제
-
-    "padding-line-between-statements": [
-      "error",
-      { "blankLine": "always", "prev": "*", "next": "return" },
-      { "blankLine": "always", "prev": ["const", "let", "var"], "next": "*" },
-      { "blankLine": "any", "prev": ["const", "let", "var"], "next": ["const", "let", "var"] }
-    ]
-    // prev : 이전에 무엇이 왔을때 blankline을 넣을것인가? // const, let, var
-    // next : 다음에 무엇이 왔을때 blankline을 넣을 것인가?  // return
   },
 
   "ignorePatterns": ["node_modules/"], // ESlint를 적용하지 않을 폴더나 파일

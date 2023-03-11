@@ -22,7 +22,8 @@
     "js-cookie": "^3.0.1",
     "mongoose": "^6.8.2",
     "nodemon": "^2.0.20",
-    "socket.io": "^4.5.4"
+    "socket.io": "^4.5.4",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "eslint": "^8.34.0",
