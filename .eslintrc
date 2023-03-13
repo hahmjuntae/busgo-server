@@ -9,7 +9,7 @@
     "no-multiple-empty-lines": ["error", { "max": 1, "maxBOF": 0, "maxEOF": 1 }],
     // 최대 줄바꿈 수는 한 줄, 마지막 줄바꿈 없음
 
-    "function-paren-newline": ["error", "multiline-arguments"],
+    // "function-paren-newline": ["error", "never"],
     // 오직 하나 개의 매개 변수/인자가 있는 경우 괄호 안의 줄 바꿈 허용
 
     "comma-dangle": ["error", "always-multiline"],
