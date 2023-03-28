@@ -13,36 +13,19 @@ require('dotenv').config();
  */
 router.get(`/info/:number`, async (req, res, next) => {
   try {
-    const busInfoXML = await axios
-      .get(
-        `http://apis.data.go.kr/6410000/busrouteservice/getBusRouteList?serviceKey=${process.env.BUS_DATA_API_KEY}&keyword=${req.params.number}`,
-      )
-      .then((res) => {
-        return res.data;
-      });
+    const { data: busInfoXML } = await axios.get(
+      `http://apis.data.go.kr/6410000/busrouteservice/getBusRouteList`,
+      {
+        params: {
+          serviceKey: process.env.BUS_DATA_API_KEY,
+          keyword: req.params.number,
+        },
+      },
+    );
 
-    /* XML to JSON */
-    parser.parseStringPromise(busInfoXML).then(function (result) {
-      const busInfoJSON = JSON.stringify(result);
+    const busInfoJSON = await parser.parseStringPromise(busInfoXML);
 
-      return res.status(200).send(busInfoJSON);
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-/**
- * @path {GET} /api/timetable
- * @description 노선 시간표 가져오기
- */
-router.get('/timetable', async (req, res, next) => {
-  try {
-    await TimeTables.find().then((timetable) => {
-      if (!timetable) return res.status(404).send('시간표가 없습니다.');
-
-      return res.status(200).send(timetable); // auth를 통과한 클라이언트 유저 정보 return
-    });
+    return res.status(200).send(JSON.stringify(busInfoJSON));
   } catch (error) {
     next(error);
   }
@@ -54,20 +37,19 @@ router.get('/timetable', async (req, res, next) => {
  */
 router.get(`/location/:id`, async (req, res, next) => {
   try {
-    const busLocationXML = await axios
-      .get(
-        `http://apis.data.go.kr/6410000/buslocationservice/getBusLocationList?serviceKey=${process.env.BUS_DATA_API_KEY}&routeId=${req.params.id}`,
-      )
-      .then((res) => {
-        return res.data;
-      });
+    const { data: busLocationXML } = await axios.get(
+      `http://apis.data.go.kr/6410000/buslocationservice/getBusLocationList`,
+      {
+        params: {
+          serviceKey: process.env.BUS_DATA_API_KEY,
+          routeId: req.params.id,
+        },
+      },
+    );
 
-    /* XML to JSON */
-    parser.parseStringPromise(busLocationXML).then(function (result) {
-      const busLocationJSON = JSON.stringify(result);
+    const busLocationJSON = await parser.parseStringPromise(busLocationXML);
 
-      return res.status(200).send(busLocationJSON);
-    });
+    return res.status(200).send(JSON.stringify(busLocationJSON));
   } catch (error) {
     next(error);
   }
@@ -79,20 +61,19 @@ router.get(`/location/:id`, async (req, res, next) => {
  */
 router.get(`/station/:id`, async (req, res, next) => {
   try {
-    const busStationXML = await axios
-      .get(
-        `http://apis.data.go.kr/6410000/busrouteservice/getBusRouteStationList?serviceKey=${process.env.BUS_DATA_API_KEY}&routeId=${req.params.id}`,
-      )
-      .then((res) => {
-        return res.data;
-      });
+    const { data: busStationXML } = await axios.get(
+      `http://apis.data.go.kr/6410000/busrouteservice/getBusRouteStationList`,
+      {
+        params: {
+          serviceKey: process.env.BUS_DATA_API_KEY,
+          routeId: req.params.id,
+        },
+      },
+    );
 
-    /* XML to JSON */
-    parser.parseStringPromise(busStationXML).then(function (result) {
-      const busStationJSON = JSON.stringify(result);
+    const busStationJSON = await parser.parseStringPromise(busStationXML);
 
-      return res.status(200).send(busStationJSON);
-    });
+    return res.status(200).send(JSON.stringify(busStationJSON));
   } catch (error) {
     next(error);
   }
@@ -104,47 +85,42 @@ router.get(`/station/:id`, async (req, res, next) => {
  */
 router.post(`/timetable/departure`, async (req, res, next) => {
   try {
-    console.log('요청 버스 정보:: ', req.body);
+    console.log('요청 버스 정보:: ', req.body); // 요청된 버스 정보 출력
 
-    // DB에서 버스번호로 시간표  찾기
-    await TimeTables.findOne({ busNumber: req.body.busNumber }).then((timeTable) => {
-      const now = dayjs(); // 요청 받았을 때의 시간을 저장해야하므로 스코프 주의
+    const now = dayjs(); // 현재 시간을 dayjs를 이용해 구함
+    const timeTable = await TimeTables.findOne({ busNumber: req.body.busNumber }); // 요청된 버스 번호에 해당하는 시간표를 DB에서 찾음
 
-      // DB에 시간표가 없을 경우
-      // DB 생성 후 요일과 시간 등록
-      if (!timeTable) {
-        console.log(
-          `DB에 ${req.body.busNumber}버스 시간표가 없습니다. 새로운 시간표를 생성합니다.`,
-        );
-        TimeTables.create({
-          busNumber: req.body.busNumber,
-          busId: req.body.busId,
-          table: [
-            {
-              // 요일,시간 (표 UI 작성 시 요일로 구분해서 사용)
-              departure: now.format('ddd,HH:mm'),
-            },
-          ],
-        })
-          .then((timeTable) => {
-            timeTable
-              .save()
-              .then(() =>
-                res.status(201).send(`${req.body.busNumber}번 시간표를 업데이트 했습니다.`),
-              );
-          })
-          .catch((error) => console.error(error));
-      } else {
-        // DB에 시간표가 있을 경우
-        // 요일과 시간만 등록
-        timeTable.table.push({
-          departure: now.format('ddd,HH:mm'),
-        });
-        timeTable
-          .save()
-          .then(() => res.status(201).send(`${req.body.busNumber}번 시간표를 업데이트 했습니다.`));
-      }
-    });
+    if (!timeTable) {
+      // DB에 해당 버스 번호에 해당하는 시간표가 없는 경우
+      console.log(`DB에 ${req.body.busNumber}버스 시간표가 없습니다. 새로운 시간표를 생성합니다.`); // 새로운 시간표를 생성한다는 로그 출력
+      const newTimeTable = await TimeTables.create({
+        // 새로운 시간표 생성
+        busNumber: req.body.busNumber,
+        busId: req.body.busId,
+        table: [{ departure: now.format('ddd,HH:mm') }], // 현재 시간을 departure으로 하는 새로운 시간표 생성
+      });
+      await newTimeTable.save(); // DB에 저장
+      res.status(201).send(`${req.body.busNumber}번 시간표를 업데이트 했습니다.`); // 성공적으로 업데이트 되었다는 메시지 전송
+    } else {
+      // DB에 해당 버스 번호에 해당하는 시간표가 있는 경우
+      timeTable.table.push({ departure: now.format('ddd,HH:mm') }); // 해당 시간표에 현재 시간을 departure으로 하는 새로운 시간 추가
+      await timeTable.save(); // DB에 저장
+      res.status(201).send(`${req.body.busNumber}번 시간표를 업데이트 했습니다.`); // 성공적으로 업데이트 되었다는 메시지 전송
+    }
+  } catch (error) {
+    next(error); // 에러 발생 시 다음 미들웨어로 전달
+  }
+});
+
+/**
+ * @path {GET} /api/timetable
+ * @description 노선 시간표 가져오기
+ */
+router.get('/timetable', async (req, res, next) => {
+  try {
+    const timetable = await TimeTables.find();
+    if (!timetable) return res.status(404).send('시간표가 없습니다.');
+    return res.status(200).send(timetable);
   } catch (error) {
     next(error);
   }
